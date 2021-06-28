@@ -22,12 +22,12 @@ pipeline {
              url: "${code_repo_name}"
                     
              // Create Ansible admin directory and do a checkout from master //
-             
+             dir('Snowflake_BoT_admin') {
              checkout([$class: 'GitSCM', 
              branches: [[name: '*/main']], 
              extensions: [], 
              userRemoteConfigs: [[url: "${admin_repo}"]]]) 
-             
+             }
             }
         }
             
