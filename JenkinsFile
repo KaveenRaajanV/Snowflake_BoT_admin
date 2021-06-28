@@ -107,7 +107,6 @@ if grep -q 'successfully' "snow_sql_output.log"; then
   echo "$(date): All sql statements has been executed successfully"
 else
   echo "$(date): One or more statement has failed to execute.!!"
-  ##python wmd2c-devops-admin/python/ses/jenkins_notify_users.py --env ${ENV} --branch '''+"${branch_name}"+''' --commitdetails "GitBranch:'''+"${branch_name}"+''' ${COMMIT_ONELINER}" --url '''+"${BUILD_URL}console"+''' --build_no '''+"${BUILD_NUMBER}"+''' --logs "${LOG_READ}" --status 'failure' --buildname '''+"${JOB_NAME}"+''' --email '''+"${DL_EMAIL}"+'''
 fi
 				''')
 		
