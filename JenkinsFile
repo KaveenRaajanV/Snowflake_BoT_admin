@@ -11,6 +11,8 @@ def jenkins_host="http://ec2-18-218-55-90.us-east-2.compute.amazonaws.com:8080/"
 def git_creds="kaveen_git"// GitHub credentials- Change ID as per Jenkins server https://jenkins_url/credentials/ //
 
 def GIT_COMMIT // NO ACTION REQUIRED : For Git Commit ID assignment //
+def LOG_READ // NO ACTION REQUIRED : For console log assignment //
+def COMMIT_ONELINER  // NO ACTION REQUIRED : For Commit info assignment //
 
 // Declarative Pipeline starts here //
 pipeline {
@@ -52,6 +54,61 @@ pipeline {
                 git show --pretty=fuller ${GIT_COMMIT} | head -n 10 | tr -d '[:blank:]' | sed 's/commit/CommitID:/' | sed 's/</{/' | sed 's/>/}/' | sed 's/(//' | sed 's/)//' > git_details.txt     
                 COMMIT_ONELINER=`sed s/"'"//g git_details.txt | xargs`
                 cat git_details.txt
+				
+				while read -r file || [[ -n "$file" ]]
+                do
+                  if [[ ! -z "$file" ]]; then
+                   statement_type=`echo "$file" |  cut -d / -f 5`
+				   echo "statement_type: ${statement_type}, file: $file"
+                   if [ ${statement_type} = "ddl" ]; then
+                    database_name=`echo "$file" |  cut -d / -f 4`
+                    database="${database_name}_'''+"${env}"+'''"
+                    schema=`echo "$file" |  cut -d / -f 6`
+                    exec_type=`echo "$file" |  cut -d / -f 7 | tr '[:lower:]' '[:upper:]'`
+                    echo "$(date): Database: ${database}"
+                    echo "$(date): Schema: ${schema}"
+                    echo "$(date): File_path: ${file}"
+                    echo "$(date): Executing sql file $(cat ${file})."
+                    echo "$(date): Proceeding to create ${exec_type} in ${database} database and ${schema} schema.! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
+                    echo "$(date): Proceeding to create ${exec_type} in ${database} database and ${schema} schema.! " >> snow_sql_output.log
+                    exec_sql=`snowsql --dbname ${database} --schemaname ${schema} --config '''+"${snowsql_config}"+''' --filename ${file} --connection sf_conn  2>&1`
+                    echo "$(date): Snowsql execution ${exec_sql}"
+                    echo "${exec_sql}" >> snow_sql_output.log
+                   elif [ ${statement_type} = "release" ]; then
+                    echo "$(date): File_path: ${file}"
+                    echo "$(date): Executing release sql file $(cat ${file})."
+                    echo "$(date): Proceeding to create release query.! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
+                    echo "$(date): Proceeding to create release query.!" >> snow_sql_output.log
+                    exec_sql=`snowsql --config '''+"${snowsql_config}"+''' --filename ${file} --connection sf_conn 2>&1`
+                    echo "$(date): Snowsql execution ${exec_sql}"
+                    echo "${exec_sql}" >> snow_sql_output.log
+                   
+                   else
+                    echo "$(date): File_path: ${file}"
+                    echo "$(date): Executing  sql file $(cat ${file})."
+                    echo "$(date): Proceeding to create .! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
+                    echo "$(date): Proceeding to create .!" >> snow_sql_output.log
+                    exec_sql=`snowsql --config '''+"${snowsql_config}"+''' --filename ${file} --connection sf_conn 2>&1`
+                    echo "$(date): Snowsql execution ${exec_sql}"
+                    echo "${exec_sql}" >> snow_sql_output.log  
+                   fi
+	            
+                  else
+                      echo "$(DATE): No user file found for creation!!"
+                      exit 0
+                  fi
+                  echo "***************************************************"
+                done < ${WORKSPACE}/committed_files.txt
+echo "---------------------------------------"
+
+LOG_READ=$(cat snow_sql_output.log)
+
+if grep -q 'successfully' "snow_sql_output.log"; then
+  echo "$(date): All sql statements has been executed successfully"
+else
+  echo "$(date): One or more statement has failed to execute.!!"
+  ##python wmd2c-devops-admin/python/ses/jenkins_notify_users.py --env ${ENV} --branch '''+"${branch_name}"+''' --commitdetails "GitBranch:'''+"${branch_name}"+''' ${COMMIT_ONELINER}" --url '''+"${BUILD_URL}console"+''' --build_no '''+"${BUILD_NUMBER}"+''' --logs "${LOG_READ}" --status 'failure' --buildname '''+"${JOB_NAME}"+''' --email '''+"${DL_EMAIL}"+'''
+fi
 				''')
 		
                 }
