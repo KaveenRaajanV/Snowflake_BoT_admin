@@ -46,20 +46,20 @@ pipeline {
                 FILES_CHANGED= sh(script: "set +x && git log -m -1 --name-only --diff-filter=ACM --pretty='format:' `git rev-parse HEAD` | sort -u | grep -i '.sql\$' > ${WORKSPACE}/committed_files.txt")
                 sh("set +x && echo 'DEPLOYBEGIN' && echo '******Deploying from release/${env} Branch to ${app_name} ${env} Environment******'")
                 sh("cat ${WORKSPACE}/committed_files.txt")
-				
-               sh('''
+                
+                sh('''
                 set +x     
                 echo "" > snow_sql_output.log
                 echo "" > status
                 git show --pretty=fuller ${GIT_COMMIT} | head -n 10 | tr -d '[:blank:]' | sed 's/commit/CommitID:/' | sed 's/</{/' | sed 's/>/}/' | sed 's/(//' | sed 's/)//' > git_details.txt     
                 COMMIT_ONELINER=`sed s/"'"//g git_details.txt | xargs`
                 cat git_details.txt
-				
+                
                 while read -r file || [[ -n "$file" ]]
                 do
                   if [[ ! -z "$file" ]]; then
                    statement_type=`echo "$file" |  cut -d / -f 5`
-				   echo "statement_type: ${statement_type}, file: $file"
+                   echo "statement_type: ${statement_type}, file: $file"
                    if [ ${statement_type} = "ddl" ]; then
                     database_name=`echo "$file" |  cut -d / -f 4`
                     database="${database_name}_'''+"${env}"+'''"
@@ -92,7 +92,7 @@ pipeline {
                     echo " Snowsql execution ${exec_sql}"
                     echo "${exec_sql}" >> snow_sql_output.log  
                    fi
-	            
+                
                   else
                       echo " No user file found for creation!!"
                       exit 0
@@ -108,8 +108,8 @@ if grep -q 'successfully' "snow_sql_output.log"; then
 else
   echo " One or more statement has failed to execute.!!"
   fi
-				''')
-		
+                ''')
+        
                 }
             }
         }
