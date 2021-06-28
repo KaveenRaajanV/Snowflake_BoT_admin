@@ -48,7 +48,7 @@ pipeline {
                 sh("cat ${WORKSPACE}/committed_files.txt")
 				
 				sh('''
-				#!/bin/sh
+				#!/bin/bash
                 set +x     
                 echo "" > snow_sql_output.log
                 echo "" > status
