@@ -65,36 +65,36 @@ pipeline {
                     database="${database_name}_'''+"${env}"+'''"
                     schema=`echo "$file" |  cut -d / -f 6`
                     exec_type=`echo "$file" |  cut -d / -f 7 | tr '[:lower:]' '[:upper:]'`
-                    echo "$(date): Database: ${database}"
-                    echo "$(date): Schema: ${schema}"
-                    echo "$(date): File_path: ${file}"
-                    echo "$(date): Executing sql file $(cat ${file})."
-                    echo "$(date): Proceeding to create ${exec_type} in ${database} database and ${schema} schema.! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
-                    echo "$(date): Proceeding to create ${exec_type} in ${database} database and ${schema} schema.! " >> snow_sql_output.log
+                    echo " Database: ${database}"
+                    echo " Schema: ${schema}"
+                    echo " File_path: ${file}"
+                    echo " Executing sql file $(cat ${file})."
+                    echo " Proceeding to create ${exec_type} in ${database} database and ${schema} schema.! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
+                    echo " Proceeding to create ${exec_type} in ${database} database and ${schema} schema.! " >> snow_sql_output.log
                     exec_sql=`snowsql --dbname ${database} --schemaname ${schema} --config '''+"${snowsql_config}"+''' --filename ${file} --connection sf_conn  2>&1`
-                    echo "$(date): Snowsql execution ${exec_sql}"
+                    echo " Snowsql execution ${exec_sql}"
                     echo "${exec_sql}" >> snow_sql_output.log
                    elif [ ${statement_type} = "release" ]; then
-                    echo "$(date): File_path: ${file}"
-                    echo "$(date): Executing release sql file $(cat ${file})."
-                    echo "$(date): Proceeding to create release query.! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
-                    echo "$(date): Proceeding to create release query.!" >> snow_sql_output.log
+                    echo " File_path: ${file}"
+                    echo " Executing release sql file $(cat ${file})."
+                    echo " Proceeding to create release query.! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
+                    echo " Proceeding to create release query.!" >> snow_sql_output.log
                     exec_sql=`snowsql --config '''+"${snowsql_config}"+''' --filename ${file} --connection sf_conn 2>&1`
-                    echo "$(date): Snowsql execution ${exec_sql}"
+                    echo " Snowsql execution ${exec_sql}"
                     echo "${exec_sql}" >> snow_sql_output.log
                    
                    else
-                    echo "$(date): File_path: ${file}"
-                    echo "$(date): Executing  sql file $(cat ${file})."
-                    echo "$(date): Proceeding to create .! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
-                    echo "$(date): Proceeding to create .!" >> snow_sql_output.log
+                    echo " File_path: ${file}"
+                    echo " Executing  sql file $(cat ${file})."
+                    echo " Proceeding to create .! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
+                    echo " Proceeding to create .!" >> snow_sql_output.log
                     exec_sql=`snowsql --config '''+"${snowsql_config}"+''' --filename ${file} --connection sf_conn 2>&1`
-                    echo "$(date): Snowsql execution ${exec_sql}"
+                    echo " Snowsql execution ${exec_sql}"
                     echo "${exec_sql}" >> snow_sql_output.log  
                    fi
 	            
                   else
-                      echo "$(DATE): No user file found for creation!!"
+                      echo " No user file found for creation!!"
                       exit 0
                   fi
                   echo "***************************************************"
@@ -104,10 +104,10 @@ echo "---------------------------------------"
 LOG_READ=$(cat snow_sql_output.log)
 
 if grep -q 'successfully' "snow_sql_output.log"; then
-  echo "$(date): All sql statements has been executed successfully"
+  echo " All sql statements has been executed successfully"
 else
-  echo "$(date): One or more statement has failed to execute.!!"
-fi
+  echo " One or more statement has failed to execute.!!"
+  fi
 				''')
 		
                 }
