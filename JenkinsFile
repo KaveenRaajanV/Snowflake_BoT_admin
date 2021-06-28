@@ -5,6 +5,9 @@ def branch_name='main'
 def code_repo_name='https://github.com/KaveenRaajanV/Snowflake_BoT.git' // SSH Repository of deploy repo //
 def admin_repo='https://github.com/KaveenRaajanV/Snowflake_BoT_admin.git' //Admin Ansible repo here //
 
+def jenkins_host="http://ec2-18-218-55-90.us-east-2.compute.amazonaws.com:8080/" 
+def git_creds="kaveen_git"// GitHub credentials- Change ID as per Jenkins server https://jenkins_url/credentials/ //
+
 // Declarative Pipeline starts here //
 pipeline {
     agent any
@@ -14,29 +17,29 @@ pipeline {
         // Stage for Git Branches Checkout //
         stage('Checkout Git Branch') {
            steps{
-		   
+           
              git branch: "${branch_name}",
              url: "${code_repo_name}"
                     
              // Create Ansible admin directory and do a checkout from master //
              
              checkout([$class: 'GitSCM', 
-	     branches: [[name: '*/main']], 
-	     extensions: [], 
-	     userRemoteConfigs: [[credentialsId: 'kaveen_git', url: 'https://github.com/KaveenRaajanV/Snowflake_BoT_admin.git']]]) 
+             branches: [[name: '*/main']], 
+             extensions: [], 
+             userRemoteConfigs: [[credentialsId: "${git_creds}", url: "${admin_repo}"]]]) 
              
             }
         }
             
         // Stage to deploy the files to destination server //
-       	stage('Deploy'){
-		    steps {
-		        script {
-				
-				sh('''snowsql --dbname 'sf_bot' --schemaname 'test1' --config  '''+"${snowsql_config}"+''' -q 'select * from Agents' --connection sf_conn  2>&1''')
+        stage('Deploy'){
+            steps {
+                script {
+                
+                sh('''snowsql --dbname 'sf_bot' --schemaname 'test1' --config  '''+"${snowsql_config}"+''' -q 'select * from Agents' --connection sf_conn  2>&1''')
 
-		        }
-		    }
-       	}
+                }
+            }
+        }
     }
 }
