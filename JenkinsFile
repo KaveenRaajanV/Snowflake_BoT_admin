@@ -1,1 +1,39 @@
+def repo_name='SnowflakeBoT'
+def snowsql_config="/home/ubuntu/.snowsql/config"
 
+def branch_name='main'
+def code_repo_name='https://github.com/KaveenRaajanV/Snowflake_BoT.git' // SSH Repository of deploy repo //
+def admin_repo='https://github.com/KaveenRaajanV/Snowflake_BoT_admin.git' //Admin Ansible repo here //
+
+// Declarative Pipeline starts here //
+pipeline {
+    agent any
+    // Stages begins here //
+    stages {
+        
+        // Stage for Git Branches Checkout //
+        stage('Checkout Git Branch') {
+           steps{
+		   
+             git branch: "${branch_name}",
+             url: "${code_repo_name}"
+                    
+             // Create Ansible admin directory and do a checkout from master //
+             
+             checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/KaveenRaajanV/Snowflake_BoT_admin.git']]]) 
+             
+            }
+        }
+            
+        // Stage to deploy the files to destination server //
+       	stage('Deploy'){
+		    steps {
+		        script {
+				
+				sh('''snowsql --dbname 'sf_bot' --schemaname 'test1' --config  '''+"${snowsql_config}"+''' -q 'select * from Agents' --connection sf_conn  2>&1''')
+
+		        }
+		    }
+       	}
+    }
+}
