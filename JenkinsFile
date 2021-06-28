@@ -20,7 +20,10 @@ pipeline {
                     
              // Create Ansible admin directory and do a checkout from master //
              
-             checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/KaveenRaajanV/Snowflake_BoT_admin.git']]]) 
+             checkout([$class: 'GitSCM', 
+	     branches: [[name: '*/main']], 
+	     extensions: [], 
+	     userRemoteConfigs: [[credentialsId: 'kaveen_git', url: 'https://github.com/KaveenRaajanV/Snowflake_BoT_admin.git']]]) 
              
             }
         }
