@@ -1,3 +1,5 @@
+def env='dev'
+def app_name='snowflake'
 def repo_name='SnowflakeBoT'
 def snowsql_config="/home/ubuntu/.snowsql/config"
 
