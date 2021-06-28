@@ -39,9 +39,10 @@ pipeline {
                 script {
                 
                 sh('''snowsql --dbname 'sf_bot' --schemaname 'test1' --config  '''+"${snowsql_config}"+''' -q 'select * from Agents' --connection sf_conn  2>&1''')
-				FILES_CHANGED= sh(script: "set +x && git log -m -1 --name-only --diff-filter=ACM --pretty='format:' `git rev-parse HEAD` | sort -u | grep -i '.sql\$' > ${WORKSPACE}/committed_files.txt")
+		FILES_CHANGED= sh(script: "set +x && git log -m -1 --name-only --diff-filter=ACM --pretty='format:' `git rev-parse HEAD` | sort -u | grep -i '.sql\$' > ${WORKSPACE}/committed_files.txt")
                 sh("set +x && echo 'DEPLOYBEGIN' && echo '******Deploying from release/${env} Branch to ${app_name} ${env} Environment******'")
-				
+		sh("cat ${WORKSPACE}/committed_files.txt")
+		
                 }
             }
         }
