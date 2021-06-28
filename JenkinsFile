@@ -47,7 +47,7 @@ pipeline {
                 sh("set +x && echo 'DEPLOYBEGIN' && echo '******Deploying from release/${env} Branch to ${app_name} ${env} Environment******'")
                 sh("cat ${WORKSPACE}/committed_files.txt")
 				
-				sh('''
+               sh('''
                 set +x     
                 echo "" > snow_sql_output.log
                 echo "" > status
@@ -55,7 +55,7 @@ pipeline {
                 COMMIT_ONELINER=`sed s/"'"//g git_details.txt | xargs`
                 cat git_details.txt
 				
-				while read -r file || [[ -n "$file" ]]
+                while read -r file || [[ -n "$file" ]]
                 do
                   if [[ ! -z "$file" ]]; then
                    statement_type=`echo "$file" |  cut -d / -f 5`
