@@ -57,7 +57,8 @@ pipeline {
                 
                 while read -r file || [[ -n "$file" ]]
                 do
-				  echo "file: $file"
+				  statement_type1=`echo "$file" |  cut -d / -f 5`
+				  echo "statement_type: $statement_type1"
                   if [[ ! -z "$file" ]]; then
                    statement_type=`echo "$file" |  cut -d / -f 5`
                    echo "statement_type: ${statement_type}, file: $file"
