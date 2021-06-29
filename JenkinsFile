@@ -55,7 +55,7 @@ pipeline {
                 COMMIT_ONELINER=`sed s/"'"//g git_details.txt | xargs`
                 cat git_details.txt
                 
-                while read -r file || [[ -n "$file" ]]
+                while read -r file
                 do
                   if [[ ! -z "$file" ]]; then
                    statement_type=`echo "$file" |  cut -d / -f 5`
