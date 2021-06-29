@@ -76,7 +76,7 @@ pipeline {
                   elif [ ${statement_type} = "release" ]; then
                    echo " File_path: ${file}"
                    echo " Executing release sql file $(cat ${file})."
-                   echo " Proceeding to create release query.! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
+                   ## echo " Proceeding to create release query.! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
                    echo " Proceeding to create release query.!" >> snow_sql_output.log
                    exec_sql=`snowsql --config '''+"${snowsql_config}"+''' --filename ${file} --connection sf_conn 2>&1`
                    echo " Snowsql execution ${exec_sql}"
