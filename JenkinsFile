@@ -48,7 +48,6 @@ pipeline {
                 sh("cat ${WORKSPACE}/committed_files.txt")
                 
                 sh('''
-                #!/bin/bash
                 set +x     
                 echo "" > snow_sql_output.log
                 echo "" > status
@@ -56,8 +55,9 @@ pipeline {
                 COMMIT_ONELINER=`sed s/"'"//g git_details.txt | xargs`
                 cat git_details.txt
                 
-                while read -r file
+                while read -r file || [[ -n "$file" ]]
                 do
+				  echo "file: $file"
                   if [[ ! -z "$file" ]]; then
                    statement_type=`echo "$file" |  cut -d / -f 5`
                    echo "statement_type: ${statement_type}, file: $file"
