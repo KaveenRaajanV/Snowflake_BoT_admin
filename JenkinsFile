@@ -57,7 +57,7 @@ pipeline {
                 
                 while read -r file
                 do
-                  if [[ ! -z "$file" ]]; then
+                  if [ ! -z "$file" ]; then
                    statement_type=`echo "$file" |  cut -d / -f 5`
                    echo "statement_type: ${statement_type}, file: $file"
                    if [ ${statement_type} = "ddl" ]; then
