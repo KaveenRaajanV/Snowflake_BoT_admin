@@ -94,19 +94,33 @@ pipeline {
 				  
                   echo "***************************************************"
                 done < ${WORKSPACE}/committed_files.txt
-echo "---------------------------------------"
-
-LOG_READ=$(cat snow_sql_output.log)
-
-if grep -q 'successfully' "snow_sql_output.log"; then
-  echo " All sql statements has been executed successfully"
-else
-  echo " One or more statement has failed to execute.!!"
-  fi
+                echo "---------------------------------------"
+                
+                LOG_READ=$(cat snow_sql_output.log)
+                
+                if grep -q 'successfully' "snow_sql_output.log"; then
+                  echo " All sql statements has been executed successfully"
+                else
+                  echo " One or more statement has failed to execute.!!"
+                  fi
                 ''')
+				sh("set +x && echo 'STAGEDONE'")
         
                 }
             }
         }
+    }
+	// Post action determines Success or Failure and send notifications //
+    post {
+        always {
+            script {
+			    // Below "if condition" is for console log parsing //
+                if (currentBuild.currentResult == "FAILURE") {
+                     sh("set +x && echo 'STAGEDONE'")
+                } else {
+                     sh("set +x")
+                }
+			}
+		}
     }
 }
