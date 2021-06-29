@@ -85,7 +85,6 @@ pipeline {
                   else
                    echo " File_path: ${file}"
                    echo " Executing  sql file $(cat ${file})."
-		   mkdir /var/lib/jenkins/workspace/snowflake_bot_pipeline/logs
                    echo " Proceeding to create .! " > ${WORKSPACE}/logs/${app_name}_${BUILD_NUMBER}.log
                    echo " Proceeding to create .!" >> snow_sql_output.log
                    exec_sql=`snowsql --config '''+"${snowsql_config}"+''' --filename ${file} --connection sf_conn 2>&1`
