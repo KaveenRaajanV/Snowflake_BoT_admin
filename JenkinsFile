@@ -57,7 +57,7 @@ pipeline {
                 
                 while read -r file || [[ -n "$file" ]]
                 do
-                  statement_type=`echo "$file" |  cut -d / -f 2`
+                  statement_type=`echo "$file" |  cut -d / -f 1`
                   echo "statement_type: ${statement_type}, file: $file"
                   if [ ${statement_type} = "ddl" ]; then
                    database_name=`echo "$file" |  cut -d / -f 4`
